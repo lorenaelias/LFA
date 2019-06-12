@@ -2,17 +2,30 @@ class APF:
     def __init__(self,nomeArq,flg):
         if flg:
             arq = open(nomeArq, 'r')
-            self.Q = arq.readline()[0].rstrip().split()
-            self.S = arq.readline()[1].rstrip().split()
-            self.T = arq.readline()[2].rstrip().split()
-            self.q0 = arq.readline()[3].strip()
-            self.Z = arq.readline()[4].strip()
-            self.F = arq.readline()[5].rstrip().split()
-            transicoes = arq.readline()[6 :]
+            self.Q = arq.readline().rstrip().split()
+            self.S = arq.readline().rstrip().split()
+            self.T = arq.readline().rstrip().split()
+            self.q0 = arq.readline().strip()
+            self.Z = arq.readline().strip()
+            self.F = arq.readline().rstrip().split()
+            transicoes = arq.readlines()
             self.delta = {}
-            for i in range(len(transicoes)):
-                self.delta[i] = transicoes[i].rstrip().split()
+
+            matriz = []
+            for i in range(len(transicoes)) :
+                matriz.append(transicoes[i].strip().split())
+
+
+            for k in range(len(matriz)) :
+                if (matriz[k][2] == '[]') :
+                    self.delta[matriz[k][0], matriz[k][1]] = []
+                else :
+                    aux = matriz[k]
+                    aux = aux[3 :]
+                    self.delta[matriz[k][0], matriz[k][1], matriz[k][2]] = [tuple(aux)]
+
             arq.close()
+
         else:
             self.Q = []
             self.S = []
@@ -33,15 +46,12 @@ class APF:
                 return False
         return True
 
-    # TODO: PERCORRE CADEIA NO APF
     def percorreAPF(self, sequencia, qAt, pilhaAt):
         if sequencia == "":
             return self.pertence(qAt,self.F)
-
-    # TODO: CONVERSAO APF PARA APP
-    def converteAPFemAPP(self):
-        app = APP("none",False)
-        return app
+        else:
+            #TODO: RECURSAO DA ACEITAÇÃO
+            return
 
     def printAPF(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR ESTADO FINAL\033[0;0m-------\n')

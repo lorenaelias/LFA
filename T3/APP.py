@@ -37,11 +37,8 @@ class APP:
     def percorreAPF(self, sequencia, qAt, pilhaAt):
         if sequencia == "":
             return pilhaAt == []
-
-    # TODO: CONVERSAO APP PARA APF
-    def converteAPPemAPF(self):
-        apf = APF("none",False)
-        return apf
+        else:
+            return
 
     def printAPF(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')

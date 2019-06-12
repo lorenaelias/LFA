@@ -1,13 +1,23 @@
 from APF import APF
 from APP import APP
 
+# TODO: CONVERSAO APF PARA APP
+def converteAPFemAPP ( self ) :
+    app = APP("none", False)
+    return app
+
+# TODO: CONVERSAO APP PARA APF
+def converteAPPemAPF(self):
+    apf = APF("none",False)
+    return apf
+
 if __name__ == '__main__':
 
-    apf = APF("none", False)
+    apf = APF("0n1n.txt", True)
     apf.printAPF()
 
     app = APP("none", False)
-    app.printAPF()
+    # app.printAPF()
 
     while (1):
         sequencia = input('\033[1;34mInsira uma sequencia para o reconhecimento:\033[0;0m')
@@ -22,7 +32,7 @@ if __name__ == '__main__':
         print('\n\033[1;34mCadeia a ser testada: \033[0;0m', sequencia, '\n')
 
         print("\n\033[1;34mReconhecimento da cadeia no APF\033[0;0m\n")
-        b = apf.percorreAPF(sequencia, apf.q0)
+        b = apf.percorreAPF(sequencia, apf.q0, apf.Z)
 
         # veredito do reconhecimento da cadeia
         if b :
