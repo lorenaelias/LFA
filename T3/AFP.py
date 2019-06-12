@@ -42,28 +42,30 @@ class AFP:
 
     # TODO: Efecho de um estado com pilha
 
+    #     return resultado
 
-    def efecho(self, est):
-        efecho = [est]
-        resultado = [est]
-        temp = {}
+    def efecho(self, estado):
+        efecho = [estado]                                                   #? Entender melhor a função dessa variável
+        resultado = [estado]                                                #* Resultado da função, inclui o estado de entrada
+        dic = {}                                                            #* Nova função delta que exclui o elemento da pilha das tuplas
 
         for i in self.delta:
-            temp[(i[0], i[1])] = self.delta[i]
+            dic[(i[0], i[1])] = (self.delta[i])[0]                          #* (Simbolo, Estado) -> Novo Estado
 
-        while(efecho != []):
-            est1 = efecho.pop()
-            print("topo efecho: ",est1)
-            if ('&', str(est1)) in temp:
-                for i in temp[('&', est1)]:
-                    if i not in efecho and i not in resultado:
+        while efecho != []:                                                 #* Enquanto não houver novos estados a serem processados...
+            naoProcessado = (efecho.pop())                                  #* Desempilha um estado não processado
+            print('Topo efecho: ', naoProcessado, type(naoProcessado))
+            if ('&', naoProcessado) in dic:                                 #* Se existir uma E-transição a partir do estado pego...
+                for i in dic[('&', naoProcessado)]:                         #* Percorra todas as possibilidades
+                    if i not in efecho and i not in resultado:              #* Se for encontrado um estado novo para todos os contextos...
                         efecho.append(i)
-                    if i not in resultado:
+                    if i not in resultado:                                  #* Adicionar ao conjunto de resultados
                         resultado.append(i)
-            else:
-                if est1 not in resultado:
-                    resultado.append(est1)
+            elif naoProcessado not in resultado:                            #* Caso o estado pego ainda não tenha sido adicionado...
+                resultado.append(naoProcessado)
+        print('Resultado efecho -> ', resultado)
         return resultado
+
     
     def percorreCadeia(self, cadeia, estadoAtual, pilha):
         if cadeia == '':
@@ -75,6 +77,8 @@ class AFP:
 
         if verEstado in self.delta:                                         #* Caso exista a tupla dentro do conjunto de regras
             proxEstado = self.delta[verEstado]                              #* Aplicando delta
+            transicao = self.efecho(proxEstado[0])
+            print('transicao -> ', transicao)
             print('ProxEstado -> ', proxEstado, end='\n\n\n')
 
             if proxEstado[1] == '&': pilha.pop()                            #* Caso a regra de delta seja &, desempilhar o topo da pilha
@@ -85,7 +89,7 @@ class AFP:
 
             print('pilha -> ', pilha)
             for estado in proxEstado:                                       #* Percorra o conjunto de estados gerado por delta
-                if estado not in proxEstado:                                #? Entender melhor a condição de backtracking!
+                if estado not in proxEstado[0]:                             #? Entender melhor a condição de backtracking!
                     print('Backtracking!')
                     print(verEstado, ' -> ', end='')
                 print(estado, '\t', type(estado))
