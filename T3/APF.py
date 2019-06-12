@@ -1,5 +1,3 @@
-from APP import APP
-
 class APF:
     def __init__(self,nomeArq,flg):
         if flg:

@@ -1,5 +1,3 @@
-from APF import APF
-
 class APP:
     def __init__(self,nomeArq,flg):
         if flg:
@@ -46,7 +44,7 @@ class APP:
         return apf
 
     def printAPF(self):
-        print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR ESTADO FINAL\033[0;0m-------\n')
+        print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')
         print('Estados: ', self.Q)
         print('Alfabeto: ', self.S)
         print('Alfabeto da pilha: ', self.T)
