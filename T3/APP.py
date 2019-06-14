@@ -2,17 +2,33 @@ class APP:
     def __init__(self,nomeArq,flg):
         if flg:
             arq = open(nomeArq, 'r')
-            self.Q = arq.readline()[0].rstrip().split()
-            self.S = arq.readline()[1].rstrip().split()
-            self.T = arq.readline()[2].rstrip().split()
-            self.q0 = arq.readline()[3].strip()
-            self.Z = arq.readline()[4].strip()
-            self.F = arq.readline()[5].rstrip().split()
-            transicoes = arq.readline()[6 :]
+            self.Q = arq.readline().rstrip().split()
+            self.S = arq.readline().rstrip().split()
+            self.T = arq.readline().rstrip().split()
+            self.q0 = arq.readline().strip()
+            self.Z = arq.readline().strip()
+            self.F = arq.readline().rstrip().split()
+            transicoes = arq.readlines()
             self.delta = {}
+
+            matriz = []
             for i in range(len(transicoes)):
-                self.delta[i] = transicoes[i].rstrip().split()
+                matriz.append(transicoes[i].strip().split())
+
+            for k in range(len(matriz)):
+                if matriz[k][2] == '[]':
+                    self.delta[matriz[k][0], matriz[k][1]] = []
+                else:
+                    aux = matriz[k]
+                    aux = aux[3 :]
+                    temp = []
+                    if (matriz[k][0], matriz[k][1], matriz[k][2]) in self.delta:
+                        temp = self.delta[matriz[k][0], matriz[k][1], matriz[k][2]]
+                    self.delta[matriz[k][0], matriz[k][1], matriz[k][2]] = [tuple(aux)] + temp
+                    # esse ultimo if serve para nao sobrescrever uma transicao quando existir
+                    # mais de uma com a mesma key
             arq.close()
+
         else:
             self.Q = []
             self.S = []
@@ -34,13 +50,13 @@ class APP:
         return True
 
     # TODO: PERCORRE CADEIA NO APP
-    def percorreAPF(self, sequencia, qAt, pilhaAt):
+    def percorreAPP(self, sequencia, qAt, pilhaAt):
         if sequencia == "":
             return pilhaAt == []
         else:
             return
 
-    def printAPF(self):
+    def printAPP(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')
         print('Estados: ', self.Q)
         print('Alfabeto: ', self.S)
