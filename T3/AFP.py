@@ -56,8 +56,9 @@ class AFP:
     def alteraPilha(self, regra, simbolo, pilha):
         if regra == '&':
             print('Regra & -> ', regra)
-            antigoTopo = pilha.pop()
-            return pilha
+            novaPilha = pilha
+            antigoTopo = novaPilha.pop()
+            return novaPilha
             #return (pilha, antigoTopo)
 
         elif len(regra) == 1:
@@ -67,40 +68,72 @@ class AFP:
 
         elif len(regra) == 2:
             print('Regra que entrou na função = ', regra)
-            pilha.append(simbolo)
-            return pilha
+            novaPilha = pilha
+            novaPilha.append(simbolo)
+            return novaPilha
             # return (pilha, None)
 
     def efecho(self, estado, pilha):
-        efecho    = [ (estado, self.getRegraPilha('&', estado)) ]
-        resultado = [ (estado, self.getRegraPilha('&', estado)) ]
-        dic = {}
-
-        for i in self.delta:
-            dic [ (i[0], i[1]) ] = self.delta[i]
-
-        # for i in dic:
-            # print(i, '->', dic[i])
-        # return
+        efecho    = [ (estado, pilha) ]
+        resultado = [ (estado, pilha) ]
 
         while efecho != []:
             naoProcessado = efecho.pop()
-            print('Nao processado -> ', naoProcessado, type(naoProcessado))
-            if ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) in self.delta:
-                for i in self.delta[ ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) ]:
-                    print('i -> ', i, self.getRegraPilha('&', naoProcessado[0]))
-                    print(self.delta[('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0]))])
-                    if (i[0], i[1]) not in resultado:
-                        efecho.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
-                        print('A', i[1], self.getRegraPilha('&', naoProcessado[0]))
-                    if (i[0], i[1]) not in resultado:
-                        resultado.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
-                        print('B', i[1], self.getRegraPilha('&', naoProcessado[0]))
-
-            elif naoProcessado[0] not in resultado:
-                resultado.append( (self.delta[ ('&', i[1], i[2]) ][0], self.getRegraPilha('&', naoProcessado[0])) )
-        print(resultado)
+            # if naoProcessado[1] == []: return resultado
+            print('naoProcessado = ', naoProcessado)
+            verEstado = ('&', naoProcessado[0], naoProcessado[1][-1])
+            print('verEstado = ', verEstado)
+            if verEstado in self.delta:
+                print('funciona', self.delta[verEstado])
+                for estAtual in self.delta[verEstado][0]:
+                    print('estAtual = ', estAtual)
+                    print(self.delta[verEstado][1])
+                    novoEstado = (estAtual, self.alteraPilha(self.delta[verEstado][1], '&', pilha))
+                    if novoEstado not in efecho and novoEstado not in resultado:
+                        # efecho.append( (estAtual, self.alteraPilha(self.delta[verEstado][1], '&', pilha)) )
+                        efecho.append(novoEstado)
+                    
+                    if novoEstado not in resultado:
+                        # resultado.append( (estAtual, self.alteraPilha(self.delta[verEstado][1])) )
+                        resultado.append(novoEstado)
+            else:
+                if naoProcessado not in resultado:
+                    resultado.append(naoProcessado)
         return resultado
+
+
+
+
+    # def efecho(self, estado, pilha):
+    #     efecho    = [ (estado, self.getRegraPilha('&', estado)) ]
+    #     resultado = [ (estado, self.getRegraPilha('&', estado)) ]
+    #     dic = {}
+
+    #     for i in self.delta:
+    #         dic [ (i[0], i[1]) ] = self.delta[i]
+
+    #     # for i in dic:
+    #         # print(i, '->', dic[i])
+    #     # return
+
+    #     while efecho != []:
+    #         naoProcessado = efecho.pop()
+    #         print('Nao processado -> ', naoProcessado, type(naoProcessado))
+    #         if ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) in self.delta:
+    #             for i in self.delta[ ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) ]:
+    #                 print('i -> ', i, self.getRegraPilha('&', naoProcessado[0]))
+    #                 print(self.delta[('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0]))])
+    #                 if (i[0], i[1]) not in resultado:
+    #                     efecho.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
+    #                     print('A', i[1], self.getRegraPilha('&', naoProcessado[0]))
+    #                 if (i[0], i[1]) not in resultado:
+    #                     resultado.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
+    #                     print('B', i[1], self.getRegraPilha('&', naoProcessado[0]))
+
+    #         elif naoProcessado[0] not in resultado:
+    #             resultado.append( (self.delta[ ('&', i[1], i[2]) ][0], self.getRegraPilha('&', naoProcessado[0])) )
+    #     print(resultado)
+    #     return resultado
 
     def efechoRecursivo(self, estado, pilha, res):
         if ('&', estado, self.getTopoDelta('&', estado)) not in self.delta:
@@ -196,6 +229,9 @@ class AFP:
         print('verEstado = ', verEstado)
         if verEstado in self.delta:
             proxEstado = self.delta[verEstado]
+            if ('&', verEstado[1], self.getRegraPilha('&', verEstado[1])) in self.delta:
+                print('AAAAAAAA')
+                proxEstado[0].append(self.delta[ ('&', verEstado[1], self.getRegraPilha('&', verEstado[1])) ])
             print('proxEstado = ', proxEstado)
             regraPilha = proxEstado[1]
             for estado in proxEstado[0]:
