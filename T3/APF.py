@@ -50,62 +50,64 @@ class APF:
                 return False
         return True
 
-    def efecho(self, est):
+    def efecho(self, est, pi):
         efecho = [est]
         resultado = [est]
         while(efecho != []):
+            qq : str
             est1 = efecho.pop()
-            qq = any
-            print("topo efecho: ",est1)
-            if (est1, '&', qq) in self.delta:
-                for i in self.delta[(est1, '&', qq)]:
+            if (est1, '&', pi) in self.delta:
+                for i in self.delta[(est1, '&', pi)]:
                     if i not in efecho and i not in resultado:
-                        efecho.append(i)
+                        efecho.append(i[0])
                     if i not in resultado:
-                        resultado.append(i)
+                        resultado.append(i[0])
             else:
                 if est1 not in resultado:
                     resultado.append(est1)
         return resultado
 
-    def alteraPilha(self, estAt, a, pilhaAt, d2):
+    def alteraPilha(self, a, pilhaAt, d2):
         novaPi = pilhaAt
-        if d2 == '&':
+        if d2 == pilhaAt[-1] or (d2 == '&' and a == '&'):
+            return pilhaAt
+        elif d2 == '&':
             novaPi.pop()
-        # elif d2 == pilhaAt.top():
-        #     #nao modifica a pilha
         else:
-            novaPi.append(d2.top())
+            novaPi.append(d2[0])
         return novaPi
 
 
     def percorreAPF(self, sequencia, qAt, pilhaAt):
-        if sequencia == "":
+        if sequencia == "" and len(pilhaAt) == 1:
             if qAt in self.F:
                 return True
+            # se chegou ate aqui e ainda nao esta em um est final, pode ser que com uma
+            # etransicao consiga chegar a um
             for i in self.F:
-                if i in self.efecho(qAt):
+                if i in self.efecho(qAt, pilhaAt[-1]):
                     return True
         else:
             a = sequencia[0]
-            checaestado = (qAt, a, pilhaAt)
-            print(checaestado, ' -> ', end='')
+            checaestado = (qAt, a, pilhaAt[-1])
 
             if checaestado in self.delta:
-                estAt = checaestado[0]
-                for (d1, d2) in self.delta[(qAt,'&',pilhaAt.top())]:
-                    estAt2 = d1
-                    piAt = self.alteraPilha(estAt2, a, pilhaAt, d2)
-                    self.percorreAPF(sequencia,d1,piAt)
-
-                    if (d1, '&', pilhaAt):
-                        estAt = d1
-                        for (d1, d2) in self.delta[(qAt, '&', pilhaAt.top())]:
-                            estAt2 = d1
-                            piAt = self.alteraPilha(estAt2, a, pilhaAt, d2)
-                            self.percorreAPF(sequencia,estAt2,piAt)
+                if checaestado[1] == '&':
+                    for (f1, f2) in self.delta[(qAt, '&', pilhaAt[-1])]:
+                        piAt = self.alteraPilha('&', pilhaAt, f2)
+                        print("\n",checaestado, ' -> ')
+                        self.percorreAPF(sequencia, f1, piAt)
+                else:
+                    for (d1, d2) in self.delta[(qAt, a, pilhaAt[-1])]:
+                        piAt = self.alteraPilha(a, pilhaAt, d2)
+                        print("\nd2: ",d2)
+                        print("piAt:  ",piAt)
+                        print("pilhaAt: ",pilhaAt)
+                        print("\n",checaestado, ' -> ')
+                        self.percorreAPF(sequencia[1:], d1, piAt)
 
         return False
+
 
     def printAPF(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR ESTADO FINAL\033[0;0m-------\n')

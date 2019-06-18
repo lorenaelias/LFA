@@ -46,14 +46,14 @@ def converteAPPemAPF(app):
 
 if __name__ == '__main__':
 
-    apf = APF("wwR.txt", True)
+    apf = APF("0n1n.txt", True)
     apf.printAPF()
 
     # app = APP("none", False)
     # app.printAPF()
 
-    app = converteAPFemAPP(apf)
-    app.printAPP()
+    # app = converteAPFemAPP(apf)
+    # app.printAPP()
 
     while (1):
         sequencia = input('\033[1;34mInsira uma sequencia para o reconhecimento:\033[0;0m')
