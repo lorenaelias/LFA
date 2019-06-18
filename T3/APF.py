@@ -67,47 +67,52 @@ class APF:
                     resultado.append(est1)
         return resultado
 
+
     def alteraPilha(self, a, pilhaAt, d2):
         novaPi = pilhaAt
-        if d2 == pilhaAt[-1] or (d2 == '&' and a == '&'):
-            return pilhaAt
-        elif d2 == '&':
+        if d2 == '&':
             novaPi.pop()
-        else:
+        elif len(d2) == 2:
             novaPi.append(d2[0])
+        elif d2 == pilhaAt[-1] or (d2 == '&' and a == '&'):
+            return pilhaAt
+
         return novaPi
 
 
     def percorreAPF(self, sequencia, qAt, pilhaAt):
-        if sequencia == "" and len(pilhaAt) == 1:
+        if sequencia == "":
             if qAt in self.F:
                 return True
-            # se chegou ate aqui e ainda nao esta em um est final, pode ser que com uma
-            # etransicao consiga chegar a um
+                # se chegou ate aqui e ainda nao esta em um est final, pode ser que com uma
+                # etransicao consiga chegar a um
             for i in self.F:
                 if i in self.efecho(qAt, pilhaAt[-1]):
+                    print(i)
                     return True
+            # return False
         else:
             a = sequencia[0]
             checaestado = (qAt, a, pilhaAt[-1])
-
             if checaestado in self.delta:
-                if checaestado[1] == '&':
-                    for (f1, f2) in self.delta[(qAt, '&', pilhaAt[-1])]:
-                        piAt = self.alteraPilha('&', pilhaAt, f2)
-                        print("\n",checaestado, ' -> ')
-                        self.percorreAPF(sequencia, f1, piAt)
-                else:
-                    for (d1, d2) in self.delta[(qAt, a, pilhaAt[-1])]:
-                        piAt = self.alteraPilha(a, pilhaAt, d2)
-                        print("\nd2: ",d2)
-                        print("piAt:  ",piAt)
-                        print("pilhaAt: ",pilhaAt)
-                        print("\n",checaestado, ' -> ')
-                        self.percorreAPF(sequencia[1:], d1, piAt)
+
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox:
+                    print("to mandando ", (a, pilhaAt, d2))
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print("\n(d1,d2): ",d1, d2)
+                    print("piAt:  ", piAt)
+                    print("pilhaAt: ", pilhaAt)
+                    print(checaestado, ' -> ')
+
+                    if self.percorreAPF(sequencia[1 :], d1, piAt) :
+                        return True
+
+                    if self.percorreAPF(sequencia, d1, piAt):
+                        return True
 
         return False
-
 
     def printAPF(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR ESTADO FINAL\033[0;0m-------\n')
