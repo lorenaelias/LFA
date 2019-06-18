@@ -65,6 +65,160 @@ class AFP:
         print('Resultado efecho -> ', resultado)
         return resultado
 
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def efecho(self, estado, pilha):
+        #regraInicial = self.getRegraPilha('&', estado)                                        #* (Estado, Nova pilha, Antigo topo)
+        regraInicial = self.alteraPilha(self.getRegraPilha('&', estado), '&', pilha)[1]
+        print('Regra inicial -> ', regraInicial)
+        efecho    = [ (estado, regraInicial) ]                                         #* Pilha de contexto, usada na recursão
+        resultado = [ (estado, regraInicial) ]
+        dic = {}
+        
+        for i in self.delta:
+            dic[ (i[0], i[1]) ] = (self.delta[i])[0]
+
+        while efecho != []:
+            naoProcessado = efecho.pop()
+            print('Nao processado -> ', naoProcessado, '\t', type(naoProcessado))
+            if ('&', naoProcessado[0]) in dic:
+                for i in dic[ ('&', naoProcessado[0]) ]:
+                    print('i -> ', i)
+                    if i not in efecho and i not in resultado:
+                        regra = self.getRegraPilha('&', naoProcessado[0])
+                        print('Regra -> ', regra)
+                        #efecho.append( (i[1],  regra[0][0], regra[0][1]) )
+                        for j in regra:
+                            print('na regra ', j, i)
+                            #efecho.append( (i[1], j[0], j[1]) )
+                            efecho.append( (i[1], j[1]) )
+                    elif i not in resultado:
+                        regra = self.getRegraPilha('&', naoProcessado[0])
+                        #resultado.append( (i[1], regra[0][0], regra[0][1]) )
+                        for j in regra:
+                            print('na regra2 -> ', j, i)
+                            resultado.append( (i[1], j[1]) )
+            elif naoProcessado[0] not in resultado[0]:
+                print('funciona', naoProcessado)
+                print('AAAAAAAAAAAAAAAAAAAAAAAA -> ', naoProcessado)
+                resultado.append( (naoProcessado, self.getRegraPilha('&', naoProcessado[1][0]))[1] )
+        print('Resultado -> ', resultado)
+        return resultado
+
+    
+
+
+
+
+
+
+    def efecho(self, estado, pilha):
+        efecho    = [ (estado, self.getRegraPilha('&', estado)) ]
+        resultado = [ (estado, self.getRegraPilha('&', estado)) ]
+        dic = {}
+
+        for i in self.delta:
+            dic [ (i[0], i[1]) ] = self.delta[i]
+
+        # for i in dic:
+            # print(i, '->', dic[i])
+        # return
+
+        while efecho != []:
+            naoProcessado = efecho.pop()
+            print('Nao processado -> ', naoProcessado, type(naoProcessado))
+            if ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) in self.delta:
+                for i in self.delta[ ('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0])) ]:
+                    print('i -> ', i, self.getRegraPilha('&', naoProcessado[0]))
+                    print(self.delta[('&', naoProcessado[0], self.getRegraPilha('&', naoProcessado[0]))])
+                    if (i[0], i[1]) not in resultado:
+                        efecho.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
+                        print('A', i[1], self.getRegraPilha('&', naoProcessado[0]))
+                    if (i[0], i[1]) not in resultado:
+                        resultado.append( (i[1], self.getRegraPilha('&', naoProcessado[0])) )
+                        print('B', i[1], self.getRegraPilha('&', naoProcessado[0]))
+
+            elif naoProcessado[0] not in resultado:
+                resultado.append( (self.delta[ ('&', i[1], i[2]) ][0], self.getRegraPilha('&', naoProcessado[0])) )
+        print(resultado)
+        return resultado
+
+    def efechoRecursivo(self, estado, pilha):
+        resultado = [ (estado, pilha) ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     def percorreCadeia(self, cadeia, estadoAtual, pilha):
         #* CONDIÇÃO DE PARADA DA RECURSÃO
