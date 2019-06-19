@@ -17,10 +17,13 @@ def converteAPFemAPP (apf):
 
     app.Z = 'X'
 
+    app.delta = apf.delta
+
     app.delta[(app.q0, '&', app.Z)] = [(apf.q0, apf.Z+app.Z)]
-    for i in apf.F:
-        qq = any
-        apf.delta[(i, '&', qq)] = [(app.F[0], '&')]
+
+    for i in apf.F+app.F:
+        for j in app.T:
+            app.delta[(i, '&', j)] = [(app.F[0], '&')]
 
     return app
 
@@ -39,27 +42,32 @@ def converteAPPemAPF(app):
     apf.q0 = "q"
     apf.F = ["f"]
 
-    apf.delta[('p', '&', 'X')] = [(app.q0, app.Z+apf.Z)]
+    apf.delta = app.delta
+
+    aux = []
+    if ('p', '&', 'X') in apf.delta:
+        aux = apf.delta[('p', '&', 'X')]
+    apf.delta[('p', '&', 'X')] = [(app.q0, app.Z+apf.Z)]+aux
     for i in app.Q:
         apf.delta[(i, '&', 'X')] = [(apf.F[0], '&')]
     return apf
 
 if __name__ == '__main__':
 
-    apf = APF("wwR.txt", True)
+    apf = APF("wwR.txt", True) # wwR.txt / 0n1n.txt / anb2n.txt
     apf.printAPF()
 
     # app = APP("none", False)
     # app.printAPF()
 
-    # app = converteAPFemAPP(apf)
-    # app.printAPP()
+    app = converteAPFemAPP(apf)
+    app.printAPP()
 
     while (1):
         sequencia = input('\033[1;34mInsira uma sequencia para o reconhecimento:\033[0;0m')
 
         # garantir que todos os caracteres pertencem ao alfabeto
-        while apf.validacaocadeia(sequencia) != True :
+        while app.validacaocadeia(sequencia) != True :
             print(' ')
             print('\033[1;34mCadeia inválida!\033[0;0m')
             sequencia = input('\033[1;34mInsira uma sequencia para o reconhecimento:\033[0;0m')
@@ -68,7 +76,7 @@ if __name__ == '__main__':
         print('\n\033[1;34mCadeia a ser testada: \033[0;0m', sequencia, '\n')
 
         print("\n\033[1;34mReconhecimento da cadeia no APF\033[0;0m\n")
-        b = apf.percorreAPF(sequencia, apf.q0, [apf.Z])
+        b = app.percorreAPP(sequencia, app.q0, [app.Z])
 
         # veredito do reconhecimento da cadeia
         if b == True:

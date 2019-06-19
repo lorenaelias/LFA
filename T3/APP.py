@@ -49,12 +49,70 @@ class APP:
                 return False
         return True
 
-    # TODO: PERCORRE CADEIA NO APP
-    def percorreAPP(self, sequencia, qAt, pilhaAt):
-        if sequencia == "":
-            return pilhaAt == []
+
+    def efecho(self, est, pi):
+        efecho = [est]
+        resultado = [est]
+        while(efecho != []):
+            qq : str
+            est1 = efecho.pop()
+            if (est1, '&', pi) in self.delta:
+                for i in self.delta[(est1, '&', pi)]:
+                    if i not in efecho and i not in resultado:
+                        efecho.append(i[0])
+                    if i not in resultado:
+                        resultado.append(i[0])
+            else:
+                if est1 not in resultado:
+                    resultado.append(est1)
+        return resultado
+
+
+    def alteraPilha(self, a, pilhaAt, d2):
+        novaPi = pilhaAt
+        if d2 == '&':
+            novaPi.pop()
+        elif len(d2) == 2:
+            novaPi.append(d2[0])
+        elif d2 == pilhaAt[-1] or (d2 == '&' and a == '&'):
+            return pilhaAt
+
+        return novaPi
+
+    # nao ta funcionando corretamente
+    def percorreAPP( self, sequencia, qAt, pilhaAt ) :
+        print("\npilha ",pilhaAt)
+        qAt2 = qAt
+        if  sequencia == "":
+            if pilhaAt == [self.Z]:
+                return True
+
         else:
-            return
+            a = sequencia[0]
+            checaestado = (qAt, a, pilhaAt[-1])
+
+            if checaestado in self.delta :
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
+                    qAt2 = d1
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPP(sequencia[1 :], d1, piAt) :
+                        return True
+
+            checaestado = (qAt, '&', pilhaAt[-1])
+            if checaestado in self.delta:
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox:
+                    qAt2 = d1
+                    piAt = self.alteraPilha('&', pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPP(sequencia, d1, piAt) :
+                        return True
+
+        return False
 
     def printAPP(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')
