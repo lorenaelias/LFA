@@ -55,7 +55,7 @@ class AFP:
 
     def alteraPilha(self, regra, simbolo, pilha):
         if regra == '&':
-            print('Regra & -> ', regra)
+            # print('Regra & -> ', regra)
             novaPilha = pilha
             antigoTopo = novaPilha.pop()
             return novaPilha
@@ -67,7 +67,7 @@ class AFP:
             # return (pilha, pilha[-1])
 
         elif len(regra) == 2:
-            print('Regra que entrou na função = ', regra)
+            # print('Regra que entrou na função = ', regra)
             novaPilha = pilha
             novaPilha.append(simbolo)
             return novaPilha
@@ -210,8 +210,18 @@ class AFP:
 
     def percorre(self, cadeia, estadoAtual, pilha):
         if cadeia == '':
-            return estadoAtual in self.F or pilha == []
+            # return estadoAtual in self.F or pilha == []
+            if estadoAtual in self.F: return True
+            else:
+                # print('AAAAAAAAAAAAAa')
+                if ('&', estadoAtual, pilha[-1]) in self.delta:
+                    aux = self.delta[('&', estadoAtual, pilha[-1])]
+                    for i in aux[0]:
+                        # print('finalizando -> ', i)
+                        if i in self.F: return True
+                return False
 
+        print('pilha entrando na funcao -> ', pilha)
         carAtual = cadeia[0]
         verEstado = (carAtual, estadoAtual, pilha[-1])
         print('verEstado = ', verEstado)
@@ -223,17 +233,34 @@ class AFP:
             print('proxEstado = ', proxEstado)
             regraPilha = proxEstado[1]
             for estado in proxEstado[0]:
-                print('Estado1 -> ', estado[1])
+            #     ef = self.efecho(estado, pilha)
+            #     for i in ef:
+            #         if i not in proxEstado[0]: 
+            #             proxEstado[0].append(i)
+            #     print('Estado1 -> ', estado[1])
                 # print('estado = ', estado)
                 # print('regraPilha = ', regraPilha)
+                # if (carAtual, estado, pilha[-1]) not in self.delta:
+                #     print('Backtracking')
+                #     print(verEstado, ' -> ', end='')
+                
+                if ('&', estado, pilha[-1]) in self.delta:
+                    aux = self.delta[ ('&', estado, pilha[-1]) ]
+                    print('aux --> ', aux)
+                    for i in aux[0]:
+                        print('teste i -> ', i)
+                        if ('&', i, pilha[-1]) in self.delta and self.percorre(cadeia, i, self.alteraPilha(self.delta[ ('&', i, pilha[-1]) ]), i, pilha): 
+                            return True
+
                 if (carAtual, estado, pilha[-1]) not in self.delta:
                     print('Backtracking')
-                    print(verEstado, '->', end='', sep='\t')
+                    print(verEstado, ' -> ', end='')
+
                 print(estado, carAtual, self.alteraPilha(self.getRegraPilha(carAtual, estado), carAtual, pilha))
                 print('getRegraPilha = ', self.getRegraPilha(carAtual, estado))
-                print(carAtual)
+                print('carAtual', carAtual)
                 # if self.percorre(cadeia[1:], estado, self.alteraPilha(self.getRegraPilha(carAtual, estado), carAtual, pilha)):
-                if (carAtual, estado, pilha[-1]) in self.delta and self.percorre(cadeia[1:], estado, self.alteraPilha(self.delta[ (carAtual, estado, pilha[-1]) ][0], carAtual, pilha)):
+                if (carAtual, estado, pilha[-1]) in self.delta and self.percorre(cadeia[1:], estado, self.alteraPilha(self.delta[ (carAtual, estado, pilha[-1]) ][1], carAtual, pilha)):
                     return True
         
         return False
