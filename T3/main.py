@@ -46,7 +46,7 @@ def converteAPPemAPF(app):
 
 if __name__ == '__main__':
 
-    apf = APF("0n1n.txt", True)
+    apf = APF("wwR.txt", True)
     apf.printAPF()
 
     # app = APP("none", False)
