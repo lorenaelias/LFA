@@ -80,12 +80,29 @@ class APF:
         return novaPi
 
 
-    def percorreAPF(self, sequencia, qAt, pilhaAt):
+    def percorreAPF1(self, sequencia, qAt, pilhaAt):
+        print("sequencia: ",sequencia)
         if sequencia == "":
             if qAt in self.F:
+                print("sinal", qAt, " ", sequencia)
                 return True
                 # se chegou ate aqui e ainda nao esta em um est final, pode ser que com uma
                 # etransicao consiga chegar a um
+            a = '&'
+            checaestado = (qAt, a, pilhaAt[-1])
+            if checaestado in self.delta :
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
+                    print("to mandando ", (a, pilhaAt, d2))
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print("\n(d1,d2): ", d1, d2)
+                    print("piAt:  ", piAt)
+                    print("pilhaAt: ", pilhaAt)
+                    print(checaestado, ' -> ')
+                    if self.percorreAPF("", d1, piAt):
+                        return True
+
             for i in self.F:
                 if i in self.efecho(qAt, pilhaAt[-1]):
                     print(i)
@@ -105,13 +122,82 @@ class APF:
                     print("piAt:  ", piAt)
                     print("pilhaAt: ", pilhaAt)
                     print(checaestado, ' -> ')
-
                     if self.percorreAPF(sequencia[1 :], d1, piAt) :
                         return True
 
+            a = '&'
+            checaestado = (qAt, a, pilhaAt[-1])
+            if checaestado in self.delta:
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
+                    print("to mandando ", (a, pilhaAt, d2))
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print("\n(d1,d2): ", d1, d2)
+                    print("piAt:  ", piAt)
+                    print("pilhaAt: ", pilhaAt)
+                    print(checaestado, ' -> ')
                     if self.percorreAPF(sequencia, d1, piAt):
                         return True
 
+        return False
+
+    def percorreAPF2( self, estAtual, word, pi, antPi ) :
+        a = word[0]
+        for i in range(len(self.delta)):
+            if word != "" and (
+                    estAtual in self.delta[(estAtual, a, antPi)] and ( (estAtual, a, pi[-1]) in self.delta or ((estAtual, '&', pi[-1]))) and (
+                    self.delta[(estAtual, any, pi[-1])] or self.delta[(estAtual, any, '&')])):
+                antPi = pi[:]
+                estAtual, pi = self.alteraPilha(estAtual, a, pi)
+
+
+                if self.percorreAPF(estAtual, word, pi, antPi):
+                    return True
+
+                pi = antPi
+
+        if len(pi) == 1 and estAtual in self.F and word == "&":
+            return True
+
+        return False
+
+
+    # esse ta funcionando pra 0n1n
+    def percorreAPF( self, sequencia, qAt, pilhaAt ) :
+        print("\npilha ",pilhaAt)
+        qAt2 = qAt
+        for i in self.F:
+            if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "":
+                return True
+
+        if sequencia != "":
+            a = sequencia[0]
+            checaestado = (qAt, a, pilhaAt[-1])
+
+            if checaestado in self.delta :
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
+                    qAt2 = d1
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPF(sequencia[1 :], d1, piAt) :
+                        return True
+
+            checaestado = (qAt, '&', pilhaAt[-1])
+            if checaestado in self.delta:
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox:
+                    qAt2 = d1
+                    piAt = self.alteraPilha('&', pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPF(sequencia, d1, piAt) :
+                        return True
+
+        elif qAt2 in self.F :
+            return True
         return False
 
     def printAPF(self):
