@@ -162,14 +162,15 @@ class APF:
 
         return False
 
+    pilhaux = []
 
     # esse ta funcionando pra 0n1n
-    def percorreAPF( self, sequencia, qAt, pilhaAt ) :
+    def percorreAPF3( self, sequencia, qAt, pilhaAt ) :
         print("\npilha ",pilhaAt)
         qAt2 = qAt
-        for i in self.F:
-            if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "":
-                return True
+
+        global pilhaux
+
 
         if sequencia != "":
             a = sequencia[0]
@@ -190,6 +191,47 @@ class APF:
                 prox = self.delta[checaestado]
 
                 for (d1, d2) in prox:
+                    qAt2 = d1
+                    piAt = self.alteraPilha('&', pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPF(sequencia, d1, piAt) :
+                        return True
+
+        elif qAt2 in self.F :
+            return True
+        else:
+            for i in self.F :
+                if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "" :
+                    return True
+        return False
+
+    # esse ta funcionando pra 0n1n
+    def percorreAPF ( self, sequencia, qAt, pilhaAt ) :
+        print("\npilha ", pilhaAt)
+        qAt2 = qAt
+        for i in self.F :
+            if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "" :
+                return True
+
+        if sequencia != "":
+            a = sequencia[0]
+            checaestado = (qAt, a, pilhaAt[-1])
+
+            if checaestado in self.delta :
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
+                    qAt2 = d1
+                    piAt = self.alteraPilha(a, pilhaAt, d2)
+                    print(checaestado, "->", (d1, d2))
+                    if self.percorreAPF(sequencia[1 :], d1, piAt) :
+                        return True
+
+            checaestado = (qAt, '&', pilhaAt[-1])
+            if checaestado in self.delta :
+                prox = self.delta[checaestado]
+
+                for (d1, d2) in prox :
                     qAt2 = d1
                     piAt = self.alteraPilha('&', pilhaAt, d2)
                     print(checaestado, "->", (d1, d2))

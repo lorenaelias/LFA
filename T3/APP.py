@@ -79,15 +79,14 @@ class APP:
 
         return novaPi
 
-    # nao ta funcionando corretamente
-    def percorreAPP( self, sequencia, qAt, pilhaAt ) :
+
+
+
+    def percorreAPP(self, sequencia, qAt, pilhaAt):
         print("\npilha ",pilhaAt)
         qAt2 = qAt
-        if  sequencia == "":
-            if pilhaAt == [self.Z]:
-                return True
 
-        else:
+        if sequencia != "":
             a = sequencia[0]
             checaestado = (qAt, a, pilhaAt[-1])
 
@@ -112,7 +111,16 @@ class APP:
                     if self.percorreAPP(sequencia, d1, piAt) :
                         return True
 
+        elif qAt2 in self.F:
+            return True
+
+        else :
+            for i in self.F :
+                if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "" :
+                    return True
+
         return False
+
 
     def printAPP(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')
