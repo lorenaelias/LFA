@@ -74,53 +74,173 @@ class APP:
             novaPi.pop()
         elif len(d2) == 2:
             novaPi.append(d2[0])
-        elif d2 == pilhaAt[-1] or (d2 == '&' and a == '&'):
+        elif d2 == pilhaAt[-1]:
             return pilhaAt
 
         return novaPi
 
-
+    pilhaux = []
+    def esvaziapilha ( self ) :
+        global pilhaux
+        pilhaux = []
 
 
     def percorreAPP(self, sequencia, qAt, pilhaAt):
         print("\npilha ",pilhaAt)
         qAt2 = qAt
 
+        if sequencia == "":
+            if len(pilhaAt) == 0:
+                print(qAt)
+                return True
+            else:
+                checaestado = (qAt, '&', pilhaAt[-1])
+                if checaestado in self.delta :
+                    pilhaux.append(checaestado)
+                    prox = self.delta[checaestado]
+
+                    for (d1, d2) in prox :
+                        qAt2 = d1
+                        piAt = self.alteraPilha('&', pilhaAt, d2)
+                        print(checaestado, "->", (d1, d2))
+                        if self.percorreAPP(sequencia, d1, piAt):
+                            return True
+
         if sequencia != "":
             a = sequencia[0]
-            checaestado = (qAt, a, pilhaAt[-1])
 
-            if checaestado in self.delta :
-                prox = self.delta[checaestado]
+            if len(pilhaAt) > 0:
+                checaestado = (qAt, a, pilhaAt[-1])
+                if checaestado in self.delta:
+                    pilhaux.append(checaestado)
+                    prox = self.delta[checaestado]
 
-                for (d1, d2) in prox :
-                    qAt2 = d1
-                    piAt = self.alteraPilha(a, pilhaAt, d2)
-                    print(checaestado, "->", (d1, d2))
-                    if self.percorreAPP(sequencia[1 :], d1, piAt) :
-                        return True
+                    for (d1, d2) in prox :
+                        qAt2 = d1
+                        if len(pilhaAt) > 0 :
+                            piAt = self.alteraPilha(a, pilhaAt, d2)
+                        else: return False
+                        print(checaestado, "->", (d1, d2))
+                        if self.percorreAPP(sequencia[1 :], d1, piAt) :
+                            return True
+                        else:
+                            if d2 == '&':
+                                if len(pilhaAt) > 0 :
+                                    piAt = self.alteraPilha('&', pilhaAt, d2)
+                                else:
+                                    return False
+                                print(checaestado, "->", (d1, d2))
+                                if self.percorreAPP(sequencia, d1, piAt) :
+                                    return True
 
-            checaestado = (qAt, '&', pilhaAt[-1])
-            if checaestado in self.delta:
-                prox = self.delta[checaestado]
+            if len(pilhaAt) > 0:
 
-                for (d1, d2) in prox:
-                    qAt2 = d1
-                    piAt = self.alteraPilha('&', pilhaAt, d2)
-                    print(checaestado, "->", (d1, d2))
-                    if self.percorreAPP(sequencia, d1, piAt) :
-                        return True
+                checaestado = (qAt, '&', pilhaAt[-1])
+                if checaestado in self.delta :
+                    pilhaux.append(checaestado)
+                    prox = self.delta[checaestado]
 
-        elif qAt2 in self.F:
-            return True
+                    for (d1, d2) in prox:
+                        qAt2 = d1
+                        if len(pilhaAt) > 0 :
+                            piAt = self.alteraPilha('&', pilhaAt, d2)
+                        else: return False
+                        print(checaestado, "->", (d1, d2))
+                        if self.percorreAPP(sequencia, d1, piAt) :
+                            return True
 
-        else :
-            for i in self.F :
-                if i in self.efecho(qAt, pilhaAt[-1]) and sequencia == "" :
-                    return True
+
+        #TODO: MUDAR O SIMBOLO DE DESEMPILHAR P NAO DAR PROB NO ALTERAPILHA
 
         return False
 
+    registro = []
+
+    def percorreAPP2 ( self, sequencia, qAt, pilhaAt ):
+        global registro
+        print("\npilha ", pilhaAt)
+        qAt2 = qAt
+
+        if sequencia == "":
+            if len(pilhaAt) == 0 :
+                print(qAt)
+                return True
+            else :
+                checaestado = (qAt, '&', pilhaAt[-1])
+                if checaestado in self.delta :
+                    pilhaux.append(checaestado)
+                    prox = self.delta[checaestado]
+
+                    for (d1, d2) in prox :
+                        qAt2 = d1
+                        piAt = self.alteraPilha('&', pilhaAt, d2)
+                        print(checaestado, "->", (d1, d2))
+                        if self.percorreAPP(sequencia, d1, piAt) :
+                            return True
+
+        if sequencia != "":
+            a = sequencia[0]
+            if pilhaAt == []: return False
+
+            checaestado = (qAt, '&', pilhaAt[-1])
+            if checaestado in self.delta:
+
+                pilhaux.append(checaestado)
+                prox = self.delta[checaestado]
+
+                if prox[0][1] == '&':
+
+                    prox.append(pilhaAt[-1])
+                    pilhaAt.pop()
+                    registro.append(prox)
+
+                else:
+                    if len(prox) >= 3:
+                        for i in range(1,len(prox)-1):
+                            pilhaAt.append(prox[i])
+
+                    registro.append(prox)
+
+                qAt2 = prox[0]
+                print(checaestado, "->", (prox[0], prox[1]))
+                piAt = self.alteraPilha(a, pilhaAt, prox[1])
+                if self.percorreAPP(sequencia, qAt2, piAt):
+                    return True
+
+            if pilhaAt == [] : return False
+            checaestado = (qAt, a, pilhaAt[-1])
+            if checaestado in self.delta:
+                pilhaux.append(checaestado)
+                prox = self.delta[checaestado]
+
+                if prox[1] == '&':
+
+                    prox.append(pilhaAt[-1])
+                    pilhaAt.pop()
+                    registro.append(prox)
+
+                else:
+                    if len(prox) >= 3:
+                        for i in range(1,len(prox)-1):
+                            pilhaAt.append(prox[i])
+
+
+                if prox[1] == '&' and len(pilhaAt) > 0:
+                    prox.append(pilhaAt[-1])
+                    registro.append(prox)
+                else:
+                    registro.append(prox)
+
+
+                qAt2 = prox[0]
+                piAt = self.alteraPilha(a, pilhaAt, prox[1])
+                print(checaestado, "->", (prox[0], prox[1]))
+                if self.percorreAPP(sequencia[1:], qAt2, piAt) :
+                    return True
+
+        # TODO: MUDAR O SIMBOLO DE DESEMPILHAR P NAO DAR PROB NO ALTERAPILHA
+
+        return False
 
     def printAPP(self):
         print('\n\n-------\033[1;34mAUTOMATO DE PILHA POR PILHA VAZIA\033[0;0m-------\n')

@@ -54,15 +54,16 @@ def converteAPPemAPF(app):
 
 if __name__ == '__main__':
 
-    apf = APF("0n1n.txt", True) # wwR.txt / 0n1n.txt / anb2n.txt
+    #testar aceitacao por estado final
+    apf = APF("anb2n.txt", True) # wwRat.txt v / 0n1n.txt v / anb2n.txt v
     apf.printAPF()
 
+    #testar aceitacao por pilha vazia
     # app = APP("wwRvazia.txt", True) # wwRvazia.txt
     # app.printAPP()
 
     # app = converteAPFemAPP(apf)
     # app.printAPP()
-
 
     while (1):
         sequencia = input('\033[1;34mInsira uma sequencia para o reconhecimento:\033[0;0m')
@@ -77,7 +78,10 @@ if __name__ == '__main__':
         print('\n\033[1;34mCadeia a ser testada: \033[0;0m', sequencia, '\n')
 
         print("\n\033[1;34mReconhecimento da cadeia no APF\033[0;0m\n")
+        # print("\n\033[1;34mReconhecimento da cadeia no APP\033[0;0m\n")
+        # app.esvaziapilha()
         # b = app.percorreAPP(sequencia, app.q0, [app.Z])
+        apf.esvaziapilha()
         b = apf.percorreAPF3(sequencia, apf.q0, [apf.Z])
 
         # veredito do reconhecimento da cadeia
