@@ -8,8 +8,8 @@ class Gramatica:
 
         else:
             with open(arquivo, 'r') as arq:
-                self.V = arq.readline().strip()
-                self.T = arq.readline().strip()
+                self.V = arq.readline().strip().split(' ')
+                self.T = arq.readline().strip().split(' ')
                 self.S = arq.readline().strip()
                 # self.P = arq.read().split('\n')
                 self.P = {}
@@ -54,12 +54,42 @@ class Gramatica:
     #         if var != regra[0] and 
 
     #* Remove regras da forma A -> B
-    def removeUnitario(self):                                   
-        for regra in self.P:
-            if regra in self.P[regra]:
-                # print('teste', regra, self.P[regra])
-                self.P[regra] = list(filter(lambda x: x != regra, self.P[regra]))
+    def removeUnitario(self):
+        alterado = False                                   
+        #* Regras do tipo A -> A podem ser removidas sem qualquer efeito
+        while True:
+            for regra in self.P:
+                if regra in self.P[regra]:
+                    self.P[regra] = list(filter(lambda x: x != regra, self.P[regra]))
+                    alterado = True
 
-        # for i in self.P:
-        #     print('teste, ', i)
-        #     i = list(filter(lambda x, y: x == y, i))
+            #* Percorre novamente o conjunto de regras buscando as unitárias
+            for regra in self.P:
+                for variavel in self.P[regra]:
+                    # print('variavel -> ', variavel)
+                    #* Verificar se a variável está em V exclui &, que será tratado a parte
+                    if len(variavel) == 1 and variavel in self.V:
+                        alterado = True
+                        # print('tamanho 1 = ', variavel)
+                        self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
+                        self.P[regra] = self.P[regra] + self.P[variavel]
+
+            if alterado == False:
+                break
+            else:
+                alterado = False
+
+    def removeInuteis(self):
+        #* Remove simbolos não geradores
+
+        for regra in self.P:
+            for variavel in self.P[regra]:
+                for simbolo in variavel:
+                    if simbolo not in self.T and simbolo not in self.V:
+                        print('variavel -> ', variavel)
+                        self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
+
+        #* Remove símbolos não alcançáveis
+
+        for variavel in self.V:
+            

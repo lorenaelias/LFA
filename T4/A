@@ -1,0 +1,69 @@
+wwR
+funciona: 
+00100
+11011
+10101
+1000100010001
+
+nao funciona:
+101010
+1010
+10010
+
+0n1n
+funciona:
+01
+&
+000111
+
+não funciona:
+10
+00111
+00011
+
+anb2n
+funciona:
+abb
+aabbbb
+aaabbbbbb
+
+não funciona:
+ab
+aaaaaaaaaaaab
+abbbbbbbbbbbb
+bba
+
+wwrAPP
+funciona:
+00100
+11011
+10101
+1000100010001
+
+não funciona:
+101010
+1010
+10010
+
+0n1nAPP
+funciona:
+101010
+1010
+10010
+
+nao funciona:
+10
+00111
+00011
+
+anb2nAPP
+funciona:
+abb
+aabbbb
+aaabbbbbb
+
+não funciona:
+ab
+aaaaaaaaaaaab
+abbbbbbbbbbbb
+bba
