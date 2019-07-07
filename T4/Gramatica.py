@@ -48,10 +48,32 @@ class Gramatica:
             print(i ,'->', self.P[i])
 
         return ''
+    
+    #* Remove & produções
+    def removeProducaoVazia(self):
+        #* Detecta se há &-produção na variável inicial
+        inicial = False
+        for regra in self.P[self.S]:
+            if '&' in regra:
+                inicial = True
 
-    # def fechoVariavel(self, var):
-    #     for regra in self.P:
-    #         if var != regra[0] and 
+        for variavel in self.V:
+            for regra in self.P[variavel]:
+                if regra == '&':
+                    # print(variavel, self.P[variavel])
+                    #* Exclui &-produções
+                    print('exclui')
+                    self.P[variavel] = list(filter(lambda x: x != '&', self.P[variavel]))
+                    print(self.P[variavel])
+
+                    #* Aplica & nas produções da própia variável
+                    for producao in self.P[variavel]:
+                        if variavel in producao:
+                            print('entrou no if', producao, variavel)
+                            self.P[variavel] += list(filter(lambda x: x != variavel, producao)) 
+                            print(self.P[variavel])
+
+        if inicial: self.P[self.S] += '&'
 
     #* Remove regras da forma A -> B
     def removeUnitario(self):
@@ -68,7 +90,7 @@ class Gramatica:
                 for variavel in self.P[regra]:
                     # print('variavel -> ', variavel)
                     #* Verificar se a variável está em V exclui &, que será tratado a parte
-                    if len(variavel) == 1 and variavel in self.V:
+                    if len(variavel) == 1 and variavel != '&' and variavel in self.V:
                         alterado = True
                         # print('tamanho 1 = ', variavel)
                         self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
@@ -95,7 +117,7 @@ class Gramatica:
             for variavel in self.P[regra]:
                 for simbolo in variavel:
                     if simbolo not in self.T and simbolo not in self.V:
-                        print('variavel -> ', variavel)
+                        # print('variavel -> ', variavel)
                         self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
 
         #* Remove símbolos não alcançáveis
@@ -103,9 +125,9 @@ class Gramatica:
         resultados = []
         self.alcanceVariavel(resultados)
         print(resultados)
-        print('testando')
+        # print('testando')
         for variavel in list(self.P.keys()):
             if variavel not in resultados:
-                print(variavel)
+                # print(variavel)
                 self.V = list(filter(lambda x: x != variavel, self.V))
                 self.P.pop(variavel, None)
