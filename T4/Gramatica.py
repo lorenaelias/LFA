@@ -79,6 +79,15 @@ class Gramatica:
             else:
                 alterado = False
 
+    def alcanceVariavel(self, resultado, variavel='S'):
+        for regra in self.P[variavel]:
+            for simbolo in regra:
+                if simbolo in self.V:
+                    # print('simbolo -> ', simbolo)
+                    if simbolo not in resultado:
+                        resultado.append(simbolo)
+                        self.alcanceVariavel(resultado, variavel=simbolo)
+
     def removeInuteis(self):
         #* Remove simbolos não geradores
 
@@ -91,5 +100,12 @@ class Gramatica:
 
         #* Remove símbolos não alcançáveis
 
-        for variavel in self.V:
-            
+        resultados = []
+        self.alcanceVariavel(resultados)
+        print(resultados)
+        print('testando')
+        for variavel in list(self.P.keys()):
+            if variavel not in resultados:
+                print(variavel)
+                self.V = list(filter(lambda x: x != variavel, self.V))
+                self.P.pop(variavel, None)
