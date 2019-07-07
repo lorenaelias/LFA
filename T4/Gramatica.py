@@ -70,10 +70,23 @@ class Gramatica:
                     for producao in self.P[variavel]:
                         if variavel in producao:
                             print('entrou no if', producao, variavel)
-                            self.P[variavel] += list(filter(lambda x: x != variavel, producao)) 
+                            #* Formatação de string das novas repgras aplicando &
+                            temp = self.P[variavel]
+                            aux = (filter(lambda x: x != variavel, producao))
+                            s = ''
+                            for i in aux:
+                                s += i
+                            temp.append(s)
+                            self.P[variavel] = temp
+                            # self.P[variavel] += list(filter(lambda x: x != variavel, producao)) 
                             print(self.P[variavel])
 
         if inicial: self.P[self.S] += '&'
+        #* Exclui ''
+        #! Provavelmente é um bug, mas parece não ser
+
+        for variavel in self.V:
+            self.P[variavel] = list(filter(lambda x: x != '', self.P[variavel]))
 
     #* Remove regras da forma A -> B
     def removeUnitario(self):
