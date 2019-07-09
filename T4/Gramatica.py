@@ -33,6 +33,8 @@ class Gramatica:
                     
                 print(temp)
 
+                self.disponivel = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A1_', 'A2_', 'A3_', 'A4_']
+
 
                 # for i in range(len(self.P)):
                 #     self.P[i] = self.P[i].split(' ')
@@ -48,6 +50,14 @@ class Gramatica:
             print(i ,'->', self.P[i])
 
         return ''
+
+    def existeregra(self, simb):
+        for aux in self.P:
+            for regra in self.P[aux]:
+                if len(self.P[aux]) == 1 and simb in self.P[aux]:
+                    return aux
+
+        None
     
     #* Remove & produções
     def removeProducaoVazia(self):
@@ -57,12 +67,20 @@ class Gramatica:
             if '&' in regra:
                 inicial = True
 
-        for variavel in self.V:
+        resultado = [self.S]
+        self.alcanceVariavel(resultado, self.S)
+        print('Resultados -> ', resultado)
+        for i in resultado:
+            for j in self.P[i]:
+                if '&' in j:
+                    inicial = True
+
+        for variavel in list(self.P.keys()):
             for regra in self.P[variavel]:
                 if regra == '&':
                     # print(variavel, self.P[variavel])
                     #* Exclui &-produções
-                    print('exclui')
+                    # print('exclui')
                     self.P[variavel] = list(filter(lambda x: x != '&', self.P[variavel]))
                     print(self.P[variavel])
 
@@ -85,7 +103,7 @@ class Gramatica:
         #* Exclui ''
         #! Provavelmente é um bug, mas parece não ser
 
-        for variavel in self.V:
+        for variavel in list(self.P.keys()):
             self.P[variavel] = list(filter(lambda x: x != '', self.P[variavel]))
 
     #* Remove regras da forma A -> B
@@ -114,33 +132,97 @@ class Gramatica:
             else:
                 alterado = False
 
-    def alcanceVariavel(self, resultado, variavel='S'):
+    def alcanceVariavel(self, resultado, variavel):
         for regra in self.P[variavel]:
             for simbolo in regra:
                 if simbolo in self.V:
                     # print('simbolo -> ', simbolo)
                     if simbolo not in resultado:
                         resultado.append(simbolo)
-                        self.alcanceVariavel(resultado, variavel=simbolo)
+                        self.alcanceVariavel(resultado, simbolo)
 
     def removeInuteis(self):
         #* Remove simbolos não geradores
 
-        for regra in self.P:
+        for regra in list(self.P.keys()):
             for variavel in self.P[regra]:
                 for simbolo in variavel:
-                    if simbolo not in self.T and simbolo not in self.V:
+                    # if simbolo not in self.T and simbolo not in self.V:
+                    if simbolo not in list(self.P.keys()) and simbolo not in self.T:
+                        # print('entrou no if', simbolo, self.P[regra], regra)
                         # print('variavel -> ', variavel)
                         self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
 
+        print(self)
+        print('intermediario')
+
         #* Remove símbolos não alcançáveis
 
-        resultados = []
-        self.alcanceVariavel(resultados)
-        print(resultados)
+        resultados = [self.S]
+        self.alcanceVariavel(resultados, self.S)
+        print('resultados', resultados)
         # print('testando')
         for variavel in list(self.P.keys()):
             if variavel not in resultados:
                 # print(variavel)
                 self.V = list(filter(lambda x: x != variavel, self.V))
                 self.P.pop(variavel, None)
+
+    def FNC(self):
+        nVar = 0
+
+        # for variavel in self.V:
+        #     for regra in self.P[variavel]:
+        #         for simbolo in regra:
+        #             if simbolo in self.T:
+        #                 self.P['V' + str(nVar)] = simbolo
+        #                 regra.replace(simbolo, 'V' + str(nVar))
+
+        #* Para cada terminal, é criada uma nova variável
+
+        for variavel in list(self.P.keys()):
+            for i in range(len(self.P[variavel])):
+                for simbolo in self.P[variavel][i]:
+                    if len(self.P[variavel][i]) == 2:
+                        for j in range(len(self.P[variavel][i])):
+                            if self.P[variavel][i][j] in self.T and self.P[variavel][i][j]:
+                                print('teste', self.P[variavel][i][j])
+                                existe = self.existeregra(self.P[variavel][i])
+                                if existe is not None:
+                                    self.P[variavel][i] = self.P[variavel][i].replace(simbolo, existe)
+                                else:
+                                    while True:
+                                        nVar = self.disponivel[0]
+                                        if nVar not in self.V:
+                                            self.P[nVar] = simbolo
+                                            self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
+                                            self.V.append(nVar)
+                                            break
+                                        else: self.disponivel = self.disponivel[1:]
+                    if simbolo in self.T and len(self.P[variavel][i]) > 2:
+                        # self.P['V' + str(nVar)] = simbolo
+                        # self.P[variavel][i] = self.P[variavel][i].replace(simbolo, 'V' + str(nVar))
+                        # nVar += 1
+                        while True:
+                            # print('teste disponivel', self.disponivel)
+                            nVar = self.disponivel[0]
+                            if nVar not in self.V:
+                                self.P[nVar] = simbolo
+                                self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
+                                self.disponivel = self.disponivel[1:]
+                                self.V.append(nVar)
+                                break
+                            else: self.disponivel = self.disponivel[1:]
+
+        for variavel in list(self.P.keys()):
+            for i in range(len(self.P[variavel])):
+                if len(self.P[variavel][i]) > 2:
+                    while True:
+                        nVar = self.disponivel[0]
+                        if nVar not in self.V:
+                            self.P[nVar] = self.P[variavel][i][1:]
+                            self.P[variavel][i] = self.P[variavel][i][0] + nVar
+                            self.disponivel = self.disponivel[1:]
+                            self.V.append(nVar)
+                            break
+                        else: self.disponivel = self.disponivel[1:]

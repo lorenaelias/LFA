@@ -1,8 +1,6 @@
-S A B C D
-a b c
+S A B
+a b
 S
-S a aA S A &
-A b A B aC & ABA SAS
-B baS B SBB &
-C c &
-D aaa
+S AB
+A aAA &
+B bBB &

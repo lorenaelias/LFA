@@ -1,12 +1,13 @@
 from Gramatica import Gramatica
 
-g = Gramatica(arquivo='gr.txt')
+g = Gramatica(arquivo='teste.txt')
 print(g)
 g.removeProducaoVazia()
-# g.removeUnitario()
-# g.removeInuteis()
+g.removeUnitario()
+g.removeInuteis()
+g.FNC()
 print(g)
-print(g.P, type(g.P))
+# print(g.P, type(g.P))
 # print(list(g.P.keys()))
 # teste = []
 # g.alcanceVariavel(teste, variavel=g.S)

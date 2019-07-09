@@ -1,0 +1,5 @@
+A B
+a b
+A
+A ab Ab Ba aBa
+B b a aBb
