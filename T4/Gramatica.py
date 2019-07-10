@@ -247,7 +247,8 @@ class Gramatica:
                             existe = self.existeregra(simbolo)
                             if existe is not None:
                                 self.P[variavel][i] = self.P[variavel][i].replace(simbolo, existe)
-                                self.V.append(existe)
+                                if existe not in self.V:
+                                    self.V.append(existe)
                             else:
                                 while True:
                                     nVar = self.disponivel[0]
@@ -255,7 +256,8 @@ class Gramatica:
                                         self.P[nVar] = simbolo
                                         self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
                                         self.disponivel = self.disponivel[1:]
-                                        self.V.append(nVar)
+                                        if nVar not in self.V:
+                                            self.V.append(nVar)
                                         break
                                     else: self.disponivel = self.disponivel[1:]
 
@@ -275,7 +277,8 @@ class Gramatica:
                                 self.P[nVar] = self.P[variavel][i][1:]
                                 self.P[variavel][i] = self.P[variavel][i][0] + nVar
                                 self.disponivel = self.disponivel[1:]
-                                self.V.append(nVar)
+                                if nVar not in self.V:
+                                    self.V.append(nVar)
                                 break
                             else:self.disponivel = self.disponivel[1:]
             
