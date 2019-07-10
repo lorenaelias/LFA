@@ -81,7 +81,7 @@ class Gramatica:
                     #* Exclui &-produções
                     # print('exclui')
                     self.P[variavel] = list(filter(lambda x: x != '&', self.P[variavel]))
-                    print(self.P[variavel])
+                    print('AAA', self.P[variavel])
 
                     #* Aplica & nas produções da própia variável
                     for producao in self.P[variavel]:
@@ -101,8 +101,10 @@ class Gramatica:
         if inicial: self.P[self.S] += '&'
         #* Exclui ''
 
+        # print('GRAMATICA TESTE')
         for variavel in list(self.P.keys()):
             self.P[variavel] = list(filter(lambda x: x != '', self.P[variavel]))
+        # print(self)
 
     #* Remove regras da forma A -> B
     def removeUnitario(self):
@@ -123,12 +125,16 @@ class Gramatica:
                         alterado = True
                         # print('tamanho 1 = ', variavel)
                         self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
-                        self.P[regra] = self.P[regra] + self.P[variavel]
+                        # self.P[regra] = self.P[regra] + self.P[variavel]
+                        self.P[regra] = self.P[regra] + list(filter(lambda x: x != '&', self.P[variavel]))
 
             if alterado == False:
                 break
             else:
                 alterado = False
+        
+        print('GRAMATICA TESTE')
+        print(self)
 
     def alcanceVariavel(self, resultado, variavel):
         for regra in self.P[variavel]:
@@ -241,6 +247,7 @@ class Gramatica:
                             existe = self.existeregra(simbolo)
                             if existe is not None:
                                 self.P[variavel][i] = self.P[variavel][i].replace(simbolo, existe)
+                                self.V.append(existe)
                             else:
                                 while True:
                                     nVar = self.disponivel[0]
@@ -248,6 +255,7 @@ class Gramatica:
                                         self.P[nVar] = simbolo
                                         self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
                                         self.disponivel = self.disponivel[1:]
+                                        self.V.append(nVar)
                                         break
                                     else: self.disponivel = self.disponivel[1:]
 
