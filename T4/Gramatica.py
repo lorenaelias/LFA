@@ -35,7 +35,6 @@ class Gramatica:
 
                 self.disponivel = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A1_', 'A2_', 'A3_', 'A4_']
 
-
                 # for i in range(len(self.P)):
                 #     self.P[i] = self.P[i].split(' ')
                 
@@ -101,7 +100,6 @@ class Gramatica:
 
         if inicial: self.P[self.S] += '&'
         #* Exclui ''
-        #! Provavelmente é um bug, mas parece não ser
 
         for variavel in list(self.P.keys()):
             self.P[variavel] = list(filter(lambda x: x != '', self.P[variavel]))
@@ -148,7 +146,7 @@ class Gramatica:
             for variavel in self.P[regra]:
                 for simbolo in variavel:
                     # if simbolo not in self.T and simbolo not in self.V:
-                    if simbolo not in list(self.P.keys()) and simbolo not in self.T:
+                    if simbolo not in list(self.P.keys()) and simbolo not in self.T and simbolo != '&':
                         # print('entrou no if', simbolo, self.P[regra], regra)
                         # print('variavel -> ', variavel)
                         self.P[regra] = list(filter(lambda x: x != variavel, self.P[regra]))
@@ -185,11 +183,12 @@ class Gramatica:
                 for simbolo in self.P[variavel][i]:
                     if len(self.P[variavel][i]) == 2:
                         for j in range(len(self.P[variavel][i])):
-                            if self.P[variavel][i][j] in self.T and self.P[variavel][i][j]:
+                            if self.P[variavel][i][j] in self.T:
                                 print('teste', self.P[variavel][i][j])
                                 existe = self.existeregra(self.P[variavel][i])
                                 if existe is not None:
                                     self.P[variavel][i] = self.P[variavel][i].replace(simbolo, existe)
+                                    print('novoP -> ', self.P[variavel][i])
                                 else:
                                     while True:
                                         nVar = self.disponivel[0]
@@ -226,3 +225,16 @@ class Gramatica:
                             self.V.append(nVar)
                             break
                         else: self.disponivel = self.disponivel[1:]
+
+
+    def FNC2(self):
+        nVar = 0
+        for variavel in list(self.P.keys()):
+            for i in range(len(self.P[variavel])):
+                if len(self.P[variavel][i]) >= 2:
+                    for simbolo in self.P[variavel][i]:
+                        if simbolo in self.T and simbolo not in self.V:
+                            #* Cria nova variável
+                            self.P['V' + str(nVar) + '_'] = simbolo
+                            self.P[variavel][i] = self.P[variavel][i].replace(simbolo, 'V' + str(nVar) + '_')
+                            nVar += 1

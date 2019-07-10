@@ -1,11 +1,12 @@
 from Gramatica import Gramatica
 
-g = Gramatica(arquivo='teste.txt')
+g = Gramatica(arquivo='exp.txt')
 print(g)
 g.removeProducaoVazia()
 g.removeUnitario()
 g.removeInuteis()
-g.FNC()
+g.FNC2()
+# g.FNC2()
 print(g)
 # print(g.P, type(g.P))
 # print(list(g.P.keys()))
