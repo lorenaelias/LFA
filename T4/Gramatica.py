@@ -238,14 +238,18 @@ class Gramatica:
                             # self.P['V' + str(nVar) + '_'] = simbolo
                             # self.P[variavel][i] = self.P[variavel][i].replace(simbolo, 'V' + str(nVar) + '_')
                             # nVar += 1
-                            while True:
-                                nVar = self.disponivel[0]
-                                if nVar not in self.V:
-                                    self.P[nVar] = simbolo
-                                    self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
-                                    self.disponivel = self.disponivel[1:]
-                                    break
-                                else: self.disponivel = self.disponivel[1:]
+                            existe = self.existeregra(simbolo)
+                            if existe is not None:
+                                self.P[variavel][i] = self.P[variavel][i].replace(simbolo, existe)
+                            else:
+                                while True:
+                                    nVar = self.disponivel[0]
+                                    if nVar not in self.V:
+                                        self.P[nVar] = simbolo
+                                        self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
+                                        self.disponivel = self.disponivel[1:]
+                                        break
+                                    else: self.disponivel = self.disponivel[1:]
 
         alterado = False
         while True:
