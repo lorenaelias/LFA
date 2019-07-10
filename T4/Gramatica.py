@@ -33,7 +33,7 @@ class Gramatica:
                     
                 print(temp)
 
-                self.disponivel = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A1_', 'A2_', 'A3_', 'A4_']
+                self.disponivel = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
                 # for i in range(len(self.P)):
                 #     self.P[i] = self.P[i].split(' ')
@@ -228,13 +228,45 @@ class Gramatica:
 
 
     def FNC2(self):
-        nVar = 0
+        # nVar = 0
         for variavel in list(self.P.keys()):
             for i in range(len(self.P[variavel])):
                 if len(self.P[variavel][i]) >= 2:
                     for simbolo in self.P[variavel][i]:
                         if simbolo in self.T and simbolo not in self.V:
                             #* Cria nova variável
-                            self.P['V' + str(nVar) + '_'] = simbolo
-                            self.P[variavel][i] = self.P[variavel][i].replace(simbolo, 'V' + str(nVar) + '_')
-                            nVar += 1
+                            # self.P['V' + str(nVar) + '_'] = simbolo
+                            # self.P[variavel][i] = self.P[variavel][i].replace(simbolo, 'V' + str(nVar) + '_')
+                            # nVar += 1
+                            while True:
+                                nVar = self.disponivel[0]
+                                if nVar not in self.V:
+                                    self.P[nVar] = simbolo
+                                    self.P[variavel][i] = self.P[variavel][i].replace(simbolo, nVar)
+                                    self.disponivel = self.disponivel[1:]
+                                    break
+                                else: self.disponivel = self.disponivel[1:]
+
+        alterado = False
+        while True:
+            for variavel in list(self.P.keys()):
+                for i in range(len(self.P[variavel])):
+                    if len(self.P[variavel][i]) > 2:
+                        # print('entrou no if', self.P[variavel][i])
+                        # self.P['V' + str(nVar) + '_'] = self.P[variavel][i][1:]
+                        # self.P[variavel][i] = self.P[variavel][i][0] + 'V' + str(nVar) + '_'
+                        # nVar += 1
+                        # alterado = True
+                        while True:
+                            nVar = self.disponivel[0]
+                            if nVar not in self.V:
+                                self.P[nVar] = self.P[variavel][i][1:]
+                                self.P[variavel][i] = self.P[variavel][i][0] + nVar
+                                self.disponivel = self.disponivel[1:]
+                                self.V.append(nVar)
+                                break
+                            else:self.disponivel = self.disponivel[1:]
+            
+            if alterado == False: break
+            else:
+                alterado = False
