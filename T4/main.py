@@ -1,8 +1,10 @@
 from Gramatica import Gramatica
 
-g = Gramatica(arquivo='t4.txt')
+g = Gramatica(arquivo='gr2.txt')
 print(g)
 g.removeProducaoVazia()
+print(g)
+input()
 g.removeUnitario()
 g.removeInuteis()
 print(g)

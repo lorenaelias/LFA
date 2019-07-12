@@ -53,12 +53,17 @@ class Gramatica:
     def existeregra(self, simb):
         for aux in self.P:
             for regra in self.P[aux]:
-                if len(self.P[aux]) == 1 and simb in self.P[aux]:
+                # if len(self.P[aux]) == 1 and simb in self.P[aux]:
+                # if simb in self.P[aux]:
+                if simb == self.P[aux]:
+                    print('Dentro da funcao -> ', aux)
                     return aux
 
         None
-    
-    #* Remove & produções
+
+  #MAIS RECENTE!!! PARECE QUE DEU CERTO, TESTA AI
+
+   #* Remove & produções
     def removeProducaoVazia(self):
         #* Detecta se há &-produção na variável inicial
         inicial = False
@@ -68,7 +73,7 @@ class Gramatica:
 
         resultado = [self.S]
         self.alcanceVariavel(resultado, self.S)
-        print('Resultados -> ', resultado)
+        # print('Resultados -> ', resultado)
         for i in resultado:
             for j in self.P[i]:
                 if '&' in j:
@@ -81,22 +86,74 @@ class Gramatica:
                     #* Exclui &-produções
                     # print('exclui')
                     self.P[variavel] = list(filter(lambda x: x != '&', self.P[variavel]))
-                    print('AAA', self.P[variavel])
+                    # print('AAA', self.P[variavel])
 
                     #* Aplica & nas produções da própia variável
-                    for producao in self.P[variavel]:
-                        if variavel in producao:
-                            print('entrou no if', producao, variavel)
-                            #* Formatação de string das novas repgras aplicando &
-                            temp = self.P[variavel]
-                            aux = (filter(lambda x: x != variavel, producao))
-                            s = ''
-                            for i in aux:
-                                s += i
-                            temp.append(s)
-                            self.P[variavel] = temp
+                    # anterior
+                    # for producao in self.P[variavel]:
+                    #     if variavel in producao:
+                    #         # print('entrou no if', producao, variavel)
+                    #         #* Formatação de string das novas repgras aplicando &
+                    #         temp = self.P[variavel]
+                    #         aux = (filter(lambda x: x != variavel, producao))
+                    #         s = ''
+                    #         for i in aux:
+                    #             s += i
+                    #         temp.append(s)
+                    #         self.P[variavel] = temp
                             # self.P[variavel] += list(filter(lambda x: x != variavel, producao)) 
-                            print(self.P[variavel])
+                            # print(self.P[variavel])
+                    #anterior
+
+                    marcados = []
+                    for var in list(self.P.keys()):
+                        for prod in self.P[var] :
+                            for i in prod:
+                                if i==variavel and (var, prod) not in marcados:
+                                    marcados.append((var, prod))
+                                    # print(var, prod)
+
+                    # print(marcados)
+
+                    while marcados != []:
+                        auxmarc = marcados.pop()
+                        # print(auxmarc)
+                        aplicaE = ""
+
+                        for i in auxmarc[1]:
+                            if i != variavel:
+                                aplicaE += i
+                        # print(auxmarc[0], aplicaE)
+
+                        if aplicaE not in self.P[auxmarc[0]]:
+                            self.P[auxmarc[0]] += [aplicaE]
+
+                        string1 = ""
+                        length = len(auxmarc[1])
+                        for i in range(length) :
+                            if (auxmarc[1][i] == variavel) :
+                                string1 = auxmarc[1][0 :i] + auxmarc[1][i + 1 :length]
+                        print(string1)
+                        if string1 not in self.P[auxmarc[0]]:
+                            self.P[auxmarc[0]] += [string1]
+                        for i in string1:
+                            if i == variavel:
+                                marcados.append((auxmarc[0], string1))
+
+                        string2 = ""
+                        length = len(auxmarc[1])
+                        for i in range(length) :
+                            if (auxmarc[1][i] == variavel) :
+                                string2 = auxmarc[1][0 :i] + auxmarc[1][i + 1 :length]
+                                break
+                        print(string2)
+                        if string2 not in self.P[auxmarc[0]]:
+                            self.P[auxmarc[0]] += [string2]
+                        for i in string2:
+                            if i == variavel:
+                                marcados.append((auxmarc[0], string2))
+
+
 
         if inicial: self.P[self.S] += '&'
         #* Exclui ''
@@ -104,7 +161,15 @@ class Gramatica:
         # print('GRAMATICA TESTE')
         for variavel in list(self.P.keys()):
             self.P[variavel] = list(filter(lambda x: x != '', self.P[variavel]))
-        # print(self)
+        # print(self)   
+
+        #* Verifica se há produções do tipo A -> [], caso houver, serão excluídas
+
+        for variavel in list(self.P.keys()):
+            if self.P[variavel] == []:
+                self.V.remove(variavel)
+        
+        #* As variáveis são removidas do conjunto V, na simplificação serão consideradas não geradoras e removidas
 
     #* Remove regras da forma A -> B
     def removeUnitario(self):
@@ -266,21 +331,28 @@ class Gramatica:
             for variavel in list(self.P.keys()):
                 for i in range(len(self.P[variavel])):
                     if len(self.P[variavel][i]) > 2:
+                        alterado = True
                         # print('entrou no if', self.P[variavel][i])
                         # self.P['V' + str(nVar) + '_'] = self.P[variavel][i][1:]
                         # self.P[variavel][i] = self.P[variavel][i][0] + 'V' + str(nVar) + '_'
                         # nVar += 1
                         # alterado = True
-                        while True:
-                            nVar = self.disponivel[0]
-                            if nVar not in self.V:
-                                self.P[nVar] = self.P[variavel][i][1:]
-                                self.P[variavel][i] = self.P[variavel][i][0] + nVar
-                                self.disponivel = self.disponivel[1:]
+                        existe = self.existeregra(self.P[variavel][i][1:])
+                        # print('existe -> ', existe)
+                        if existe is not None:
+                            self.P[variavel][i] = self.P[variavel][i][0] + existe
+                            if existe not in self.V: self.V.append(existe)
+                        else:
+                            while True:
+                                nVar = self.disponivel[0]
                                 if nVar not in self.V:
-                                    self.V.append(nVar)
-                                break
-                            else:self.disponivel = self.disponivel[1:]
+                                    self.P[nVar] = self.P[variavel][i][1:]
+                                    self.P[variavel][i] = self.P[variavel][i][0] + nVar
+                                    self.disponivel = self.disponivel[1:]
+                                    if nVar not in self.V:
+                                        self.V.append(nVar)
+                                    break
+                                else:self.disponivel = self.disponivel[1:]
             
             if alterado == False: break
             else:

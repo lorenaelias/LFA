@@ -1,6 +1,6 @@
 S A B
 a
 S
-S AAA B
-A aA B
+S AAA B SB
+A aA B ABA a
 B &
